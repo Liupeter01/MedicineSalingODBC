@@ -10,7 +10,7 @@ class DataBaseOp :public DataBaseConnect::Connection
 public:
 		  DataBaseOp()
 		  {
-		  
+					
 		  }
 		  ~DataBaseOp()
 		  {
