@@ -1,8 +1,27 @@
+/*
+* 数据库连接模块
+* @author：LPH
+* Date：2021-9-15
+*/
 #pragma once
-class Connection
+#include<iostream>
+namespace DataBaseConnect
 {
-public:
-		  Connection(){}
-		  ~Connection() {}
-};
+		  class Connection
+		  {
+		  public:
+					Connection()
+					{
+
+					}
+					~Connection()
+					{
+
+					}
+		  public:
+					void dataBaseOpenConnection();
+					void dataBaseCloseConnection();
+		  private:
+		  };
+}
 
