@@ -8,13 +8,12 @@
 class DataBaseOp :public DataBaseConnect::Connection
 {
 public:
-		  DataBaseOp()
-		  {
-
-		  }
-		  ~DataBaseOp()
-		  {
-
-		  }
+		  DataBaseOp();
+		  ~DataBaseOp();
+private:
+		  void sqlQueryInit();					  //SQL查询语句初始化函数
+private:
+		  HSTMT *stm1;					//连接句柄
+		  std::vector<std::string> sqlQuery;			//SQL语句适用于多种查询情况
 };
 

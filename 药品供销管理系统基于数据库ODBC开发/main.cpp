@@ -1,4 +1,5 @@
 #include"Connection.h"
+#include"DataBaseOp.h"
 
 int main()
 {
@@ -12,5 +13,7 @@ int main()
 		  std::cout << "authstr:";
 		  std::cin >> authstr;
 		  DataBaseConnect::Connection m_connect(dsn, uid, authstr);
+		  DataBaseOp dbop;
+		  
 		  return 0;
 }

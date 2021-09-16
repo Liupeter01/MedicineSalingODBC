@@ -71,6 +71,7 @@ RETCODE DataBaseConnect::Connection::dataBaseOpenConnection()
 */
 void DataBaseConnect::Connection::dataBaseCloseConnection()
 {
+
 		  SQLDisconnect(static_cast<SQLHDBC>((*this->hdbc)));
 		  SQLFreeConnect(static_cast<SQLHDBC>((*this->hdbc)));
 		  SQLFreeEnv(static_cast<SQLHENV>((*this->henv)));

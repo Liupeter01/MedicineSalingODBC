@@ -34,7 +34,7 @@ namespace DataBaseConnect
 					void DataBaseInit() = delete;		  //已经废弃的数据库的初始化函数
 		  protected:
 					/*保护成员变量区*/
-					char aaa;
+					HDBC* hdbc;
 		  private:
 					/*私有成员函数区*/
 					RETCODE dataBaseOpenConnection();
@@ -42,7 +42,6 @@ namespace DataBaseConnect
 		  private:
 					/*私有成员变量区*/
 					HENV *henv;
-					HDBC *hdbc;
 					SQLCHAR* szdsninfo;			//连接名称
 					SQLCHAR* uid;						//连接UID
 					SQLCHAR* szauthstr;			//连接验证
