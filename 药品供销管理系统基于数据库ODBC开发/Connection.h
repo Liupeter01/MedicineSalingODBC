@@ -8,6 +8,7 @@
 #include<cstdlib>
 #include<vector>
 #include<string>
+#include<chrono>
 
 /*引入C语言ODBC的头文件*/
 extern "C"
@@ -27,8 +28,7 @@ namespace DataBaseConnect
 		  class Connection
 		  {
 		  public:
-					Connection() = default;
-					Connection(std::string m_szdsninfo, std::string m_uid, std::string m_szauthstr);
+					Connection();
 					~Connection();
 		  public:
 					void DataBaseInit() = delete;		  //已经废弃的数据库的初始化函数
