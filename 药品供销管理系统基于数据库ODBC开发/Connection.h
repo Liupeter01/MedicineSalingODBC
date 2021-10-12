@@ -47,4 +47,3 @@ namespace DataBaseConnect
 					SQLCHAR* szauthstr;			//连接验证
 		  };
 }
-

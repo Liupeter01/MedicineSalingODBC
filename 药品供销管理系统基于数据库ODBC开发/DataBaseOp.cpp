@@ -29,10 +29,17 @@ DataBaseOp::DataBaseOp()
 * SQL查询语句析构函数
 * @author：LPH
 * Date：2021-9-16
-* Date:   2021-10-12 修复指针的引用级别不匹配的问题
+* Date:   2021-10-12
+		  1、修复指针的引用级别不匹配的问题
+		  2、增加SQL查询语句没有被释放内存空间的问题
 */
 DataBaseOp::~DataBaseOp()
 {
+		  for (int i = 0; i < 30; ++i)
+		  {
+					delete  (this->sqlPatterns)[INIT_BASIC_INFO];
+		  }
+		  delete this->sqlPatterns;		//释放SQL查询语句
 		  if (stm1 != nullptr)
 		  {
 					SQLFreeStmt(stm1, SQL_DROP);			//释放stmt
