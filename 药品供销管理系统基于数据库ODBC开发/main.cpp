@@ -4,6 +4,6 @@
 int main()
 {
 		  DataBaseOp DB;
-
+		  DB.menu();
 		  return 0;
 }

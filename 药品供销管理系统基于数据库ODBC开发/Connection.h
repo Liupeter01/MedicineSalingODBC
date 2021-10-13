@@ -8,7 +8,6 @@
 #include<cstdlib>
 #include<vector>
 #include<string>
-#include<chrono>
 
 /*引入C语言ODBC的头文件*/
 extern "C"
@@ -35,6 +34,7 @@ namespace DataBaseConnect
 		  protected:
 					/*保护成员变量区*/
 					HDBC* hdbc;
+					bool ConnectionSatus = 0;
 		  private:
 					/*私有成员函数区*/
 					RETCODE dataBaseOpenConnection();

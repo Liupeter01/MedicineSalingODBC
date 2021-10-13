@@ -1,4 +1,5 @@
 #pragma once
+#define _CRT_SECURE_NO_WARNINGS
 #include"Connection.h"
 /*
 * 数据库操作模块
@@ -11,6 +12,8 @@ class DataBaseOp :public DataBaseConnect::Connection
 public:
 		  DataBaseOp();
 		  ~DataBaseOp();
+public:
+		  void menu();
 private:
 		  void SQLInitQueryParttern();	//初始化SQL查询语句结构
 		  void initMedcineBasicInfo();	//初始化药品的基本信息

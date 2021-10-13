@@ -8,7 +8,7 @@
 void DataBaseOp::SQLInitQueryParttern()
 {
 		  this->sqlPatterns = new SQLCHAR * [30];
-		  (this->sqlPatterns)[INIT_BASIC_INFO] = new SQLCHAR[]{ "INSERT INTO MedicineWareBase values(" };
+		  (this->sqlPatterns)[INIT_BASIC_INFO] = new SQLCHAR[256]{ 0 };
 }
 
 /*
@@ -20,9 +20,12 @@ void DataBaseOp::SQLInitQueryParttern()
 */
 DataBaseOp::DataBaseOp()
 {
-		  this->stm1 = new HSTMT;
-		  SQLAllocStmt(static_cast<SQLHDBC>(*(this->hdbc)), stm1);	//生成stmt
-		  SQLInitQueryParttern();
+		  if (this->ConnectionSatus)
+		  {
+					this->stm1 = new HSTMT;
+					SQLAllocStmt(static_cast<SQLHDBC>(*(this->hdbc)), stm1);	//生成stmt
+					SQLInitQueryParttern();
+		  }
 }
 
 /*
@@ -35,15 +38,26 @@ DataBaseOp::DataBaseOp()
 */
 DataBaseOp::~DataBaseOp()
 {
-		  for (int i = 0; i < 30; ++i)
+		  if (this->ConnectionSatus)
 		  {
-					delete  (this->sqlPatterns)[INIT_BASIC_INFO];
+					for (int i = 0; i < 30; ++i)
+					{
+							  delete  (this->sqlPatterns)[i];
+					}
+					delete this->sqlPatterns;		//释放SQL查询语句
+					if (stm1 != nullptr)
+					{
+							  SQLFreeStmt(stm1, SQL_DROP);			//释放stmt
+							  delete stm1;
+					}
 		  }
-		  delete this->sqlPatterns;		//释放SQL查询语句
-		  if (stm1 != nullptr)
+}
+
+void DataBaseOp::menu()
+{
+		  if (this->ConnectionSatus)
 		  {
-					SQLFreeStmt(stm1, SQL_DROP);			//释放stmt
-					delete stm1;
+					this->initMedcineBasicInfo();
 		  }
 }
 
@@ -61,6 +75,24 @@ void DataBaseOp::initMedcineBasicInfo()
 		  float MedicinePrice(0.0f);
 		  std::string MedicineValidateDate{ 0 };
 		  std::string AdditionInfo{ 0 }; 
-		  RETCODE retcode = SQLExecDirectA(stm1, sqlQuery, SQL_NTS);
+		  std::cout << "MedicineID:";
+		  std::cin >> MedicineId;
+		  std::cout << "MedicineName:";
+		  std::cin >> MedicineName;
+		  std::cout << "MedicineType:";
+		  std::cin >> MedicineType;
+		  std::cout << "Manufacture:";
+		  std::cin >> Manufacture;
+		  std::cout << "MedicinePrice:";
+		  std::cin >> MedicinePrice;
+		  std::cout << "MedicineValidateDate:";
+		  std::cin >> MedicineValidateDate;
+		  std::cout << "AdditionInfo:";
+		  std::cin >> AdditionInfo;
+		  sprintf(reinterpret_cast<char*>((this->sqlPatterns)[INIT_BASIC_INFO]),
+					"INSERT INTO MedicineWareBase values(%d,\'%s\',\'%s\',\'%s\',%f,\'%s\',\'%s\'"
+										, MedicineId, MedicineName.c_str(),MedicineType.c_str(),
+					Manufacture.c_str(), MedicinePrice, MedicineValidateDate.c_str(), AdditionInfo.c_str());
+		  RETCODE retcode = SQLExecDirectA(stm1, (this->sqlPatterns)[INIT_BASIC_INFO], SQL_NTS);
 }
 

@@ -41,9 +41,11 @@ DataBaseConnect::Connection::Connection()
 		  {
 					std::cout << "[COMMAND LINE STATUS]: 数据库连接错误"  << std::endl;
 					this->dataBaseCloseConnection();				  //关闭数据库并销毁数据结构
+					ConnectionSatus = false;	  //数据库连接状态失败
 					return;
 		  }
 		  std::cout << "[COMMAND LINE STATUS]:数据库连接成功" << std::endl;
+		  ConnectionSatus = true;				   //数据库连接状态成功
 }
 
 /*
