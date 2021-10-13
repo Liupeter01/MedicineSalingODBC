@@ -22,6 +22,15 @@ extern "C"
 #include <sal.h>
 }
 
+#pragma comment(lib,"odbc32.lib")
+
+/*
+*已知问题：SQLConnect函数数据库连接返回值=-2？
+* 问题分析思路：
+		  1、数据库ODBC的配置问题
+		  2、程序的实现逻辑
+* 
+*/
 namespace DataBaseConnect
 {
 		  class Connection
@@ -34,7 +43,7 @@ namespace DataBaseConnect
 		  protected:
 					/*保护成员变量区*/
 					HDBC* hdbc;
-					bool ConnectionSatus = 0;
+					bool ConnectionSatus = false;
 		  private:
 					/*私有成员函数区*/
 					RETCODE dataBaseOpenConnection();
@@ -42,8 +51,8 @@ namespace DataBaseConnect
 		  private:
 					/*私有成员变量区*/
 					HENV *henv;
-					SQLCHAR* szdsninfo;			//连接名称
-					SQLCHAR* uid;						//连接UID
-					SQLCHAR* szauthstr;			//连接验证
+					SQLWCHAR* szdsninfo = nullptr;			//连接名称
+					SQLWCHAR* uid = nullptr;						//连接UID
+					SQLWCHAR* szauthstr = nullptr;			//连接验证
 		  };
 }

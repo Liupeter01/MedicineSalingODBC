@@ -15,7 +15,8 @@ public:
 public:
 		  void menu();
 private:
-		  void SQLInitQueryParttern();	//初始化SQL查询语句结构
+		  int getInitQuerySize();
+		  void sqlInitQueryParttern();	//初始化SQL查询语句结构
 		  void initMedcineBasicInfo();	//初始化药品的基本信息
 		  void findMedcineBasicInfo();	//查询药品的基本信息
 		  void statisticMedcineBasicInfo();		  //统计药品的基本信息
