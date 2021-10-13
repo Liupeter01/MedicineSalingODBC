@@ -71,14 +71,16 @@ DataBaseOp::~DataBaseOp()
 							  delete  (this->sqlPatterns)[i];
 					}
 					delete []this->sqlPatterns;		//释放SQL查询语句
-					SQLRETURN retcode = SQLFreeHandle(SQL_HANDLE_STMT, reinterpret_cast<SQLHANDLE>(stm1));
-					if (retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO)
+					try
 					{
-							  std::cout << "[DATABASE STATUS]: 数据库句柄释放成功" << std::endl;
+							  throw SQLFreeHandle(SQL_HANDLE_STMT, reinterpret_cast<SQLHANDLE>(stm1));
 					}
-					else
+					catch (SQLRETURN retcode)
 					{
-							  std::cout << "[DATABASE STATUS]: 数据库句柄释放失败" << std::endl;
+							  if (retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO)
+										std::cout << "[DATABASE STATUS]: 数据库句柄释放成功" << std::endl;
+							  else
+										std::cout << "[DATABASE STATUS]: 数据库句柄释放失败" << std::endl;
 					}
 					if (stm1 != nullptr)
 					{
@@ -109,7 +111,7 @@ void DataBaseOp::initMedcineBasicInfo()
 		  float MedicinePrice(0.0f);
 		  std::string MedicineValidateDate{ 0 };
 		  std::string AdditionInfo{ 0 }; 
-	/*	  std::cout << "MedicineID:";
+		  std::cout << "MedicineID:";
 		  std::cin >> MedicineId;
 		  std::cout << "MedicineName:";
 		  std::cin >> MedicineName;
@@ -127,16 +129,16 @@ void DataBaseOp::initMedcineBasicInfo()
 					"INSERT INTO MedicineWareBase values(%d,\'%s\',\'%s\',\'%s\',%f,\'%s\',\'%s\')",MedicineId, 
 					MedicineName.c_str(),MedicineType.c_str(),Manufacture.c_str(), 
 					MedicinePrice, MedicineValidateDate.c_str(), AdditionInfo.c_str());
-
-		  RETCODE retcode = SQLExecDirectW(stm1, reinterpret_cast<SQLWCHAR*>((this->sqlPatterns)[INIT_BASIC_INFO]), SQL_NTS);
-		  if (retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO)
+		  try
 		  {
-					std::cout << "[DATABASE STATUS]: 数据库插入操作成功" << std::endl;
+					SQLExecDirectW(stm1, reinterpret_cast<SQLWCHAR*>((this->sqlPatterns)[INIT_BASIC_INFO]), SQL_NTS);
 		  }
-		  else
+		  catch (SQLRETURN retcode)
 		  {
-					std::cout << "[DATABASE STATUS]: 数据库插入操作失败" << std::endl;
-		  }*/
-
+					if (retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO)
+							  std::cout << "[DATABASE STATUS]: 数据库插入操作成功" << std::endl;
+					else
+							  std::cout << "[DATABASE STATUS]: 数据库插入操作失败" << std::endl;
+		  }
 }
 
