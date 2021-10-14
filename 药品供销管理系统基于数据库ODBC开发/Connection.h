@@ -26,11 +26,7 @@ extern "C"
 #pragma comment(lib,"odbc32.lib")
 
 /*
-*已知问题：SQLConnect函数数据库连接返回值=-2？
-* 问题分析思路：
-		  1、数据库ODBC的配置问题
-		  2、程序的实现逻辑
-* 
+*问题修复：SQLConnect函数数据库连接返回值=-2   -------  OK
 */
 namespace DataBaseConnect
 {

@@ -28,8 +28,7 @@ void DataBaseOp::sqlInitQueryParttern()
 		  {
 					(this->sqlPatterns)[i] = new SQLWCHAR[256]{ 0 };
 		  }
-		  wsprintf((this->sqlPatterns)[INIT_BASIC_INFO],
-					L"INSERT INTO MedicineManagmentSys.dbo.MedicineWareBase values(?,?,?,?,?,?,?) ");
+		  wsprintf((this->sqlPatterns)[INIT_BASIC_INFO],L"INSERT INTO MedicineManagmentSys.dbo.MedicineWareBase values(?,?,?,?,?,?,?) ");
 }
 
 /*
@@ -45,17 +44,22 @@ DataBaseOp::DataBaseOp()
 		  {
 					this->stm1 = new HSTMT;
 					SQLAllocStmt(static_cast<SQLHDBC>(*(this->hdbc)), stm1);	//生成stmt
-					SQLRETURN retcode = SQLAllocHandle(SQL_HANDLE_STMT, *hdbc, reinterpret_cast<SQLHANDLE*>(&stm1));
-					if (retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO)
+					try
 					{
-							  std::cout << "[DATABASE STATUS]: 数据库句柄分配成功" << std::endl;
+							  throw  SQLAllocHandle(SQL_HANDLE_STMT, *hdbc, reinterpret_cast<SQLHANDLE*>(&stm1));;
 					}
-					else
+					catch(SQLRETURN retcode)
 					{
-							  std::cout << "[DATABASE STATUS]: 数据库句柄分配失败" << std::endl;
+							  if (retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO)
+							  {
+										std::cout << "[DATABASE STATUS]: 数据库句柄分配成功" << std::endl;
+							  }
+							  else
+							  {
+										std::cout << "[DATABASE STATUS]: 数据库句柄分配失败" << std::endl;
+							  }
 					}
 					this->sqlInitQueryParttern();
-
 		  }
 }
 
@@ -110,26 +114,26 @@ void DataBaseOp::menu()
 void DataBaseOp::initMedcineBasicInfo()
 {
 		  int MedicineId(0);
-		  std::string MedicineName{ 0 };
-		  std::string MedicineType{ 0 };
-		  std::string Manufacture{ 0 };
+		  wchar_t MedicineName[256] = { 0 };
+		  wchar_t MedicineType[256] = { 0 };
+		  wchar_t Manufacture[256] = { 0 };
 		  float MedicinePrice(0.0f);
-		  std::string MedicineValidateDate{ 0 };
-		  std::string AdditionInfo{ 0 }; 
+		  wchar_t MedicineValidateDate[256] = { 0 };
+		  wchar_t AdditionInfo[256] = { 0 };
 		  std::cout << "MedicineID:";
 		  std::cin >> MedicineId;
 		  std::cout << "MedicineName:";
-		  std::cin >> MedicineName;
+		  std::wcin >> MedicineName;
 		  std::cout << "MedicineType:";
-		  std::cin >> MedicineType;
+		  std::wcin >> MedicineType;
 		  std::cout << "Manufacture:";
-		  std::cin >> Manufacture;
+		  std::wcin >> Manufacture;
 		  std::cout << "MedicinePrice:";
 		  std::cin >> MedicinePrice;
 		  std::cout << "MedicineValidateDate:";
-		  std::cin >> MedicineValidateDate;
+		  std::wcin >> MedicineValidateDate;
 		  std::cout << "AdditionInfo:";
-		  std::cin >> AdditionInfo;
+		  std::wcin.getline(AdditionInfo, 256);
 		  try
 		  {
 					throw SQLPrepareW(reinterpret_cast<SQLHSTMT>(stm1), (this->sqlPatterns)[INIT_BASIC_INFO], SQL_NTS);
@@ -141,12 +145,12 @@ void DataBaseOp::initMedcineBasicInfo()
 							  SQLLEN strLength = SQL_NTS;
 							  //绑定SQL语句的参数
 							  ::SQLBindParameter(reinterpret_cast<SQLHSTMT>(stm1), 1, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 100, 0, (SQLPOINTER)&MedicineId, sizeof(int), NULL);
-							  ::SQLBindParameter(reinterpret_cast<SQLHSTMT>(stm1), 2, SQL_PARAM_INPUT, SQL_C_WCHAR, SQL_WVARCHAR, 100, 0, (SQLPOINTER)MedicineName.c_str(), strlen(MedicineName.c_str()), &strLength);
-							  ::SQLBindParameter(reinterpret_cast<SQLHSTMT>(stm1), 3, SQL_PARAM_INPUT, SQL_C_WCHAR, SQL_WVARCHAR, 50, 0, (SQLPOINTER)MedicineType.c_str(), strlen(MedicineType.c_str()), &strLength);
-							  ::SQLBindParameter(reinterpret_cast<SQLHSTMT>(stm1), 4, SQL_PARAM_INPUT, SQL_C_WCHAR, SQL_WVARCHAR, 100, 0, (SQLPOINTER)Manufacture.c_str(), strlen(Manufacture.c_str()), &strLength);
+							  ::SQLBindParameter(reinterpret_cast<SQLHSTMT>(stm1), 2, SQL_PARAM_INPUT, SQL_C_WCHAR, SQL_WVARCHAR, 100, 0, (SQLPOINTER)MedicineName, wcslen(MedicineName), &strLength);
+							  ::SQLBindParameter(reinterpret_cast<SQLHSTMT>(stm1), 3, SQL_PARAM_INPUT, SQL_C_WCHAR, SQL_WVARCHAR, 50, 0, (SQLPOINTER)MedicineType, wcslen(MedicineType), &strLength);
+							  ::SQLBindParameter(reinterpret_cast<SQLHSTMT>(stm1), 4, SQL_PARAM_INPUT, SQL_C_WCHAR, SQL_WVARCHAR, 100, 0, (SQLPOINTER)Manufacture, wcslen(Manufacture), &strLength);
 							  ::SQLBindParameter(reinterpret_cast<SQLHSTMT>(stm1), 5, SQL_PARAM_INPUT,  SQL_C_FLOAT, SQL_FLOAT, 8, 0, (SQLPOINTER)&MedicinePrice, sizeof(float), NULL);
-							  ::SQLBindParameter(reinterpret_cast<SQLHSTMT>(stm1), 6, SQL_PARAM_INPUT, SQL_C_WCHAR, SQL_WVARCHAR, 20, 0, (SQLPOINTER)MedicineValidateDate.c_str(), strlen(MedicineValidateDate.c_str()), &strLength);
-							  ::SQLBindParameter(reinterpret_cast<SQLHSTMT>(stm1), 7, SQL_PARAM_INPUT, SQL_C_WCHAR, SQL_WVARCHAR, 100, 0, (SQLPOINTER)AdditionInfo.c_str(), strlen(AdditionInfo.c_str()), &strLength);
+							  ::SQLBindParameter(reinterpret_cast<SQLHSTMT>(stm1), 6, SQL_PARAM_INPUT, SQL_C_WCHAR, SQL_WVARCHAR, 20, 0, (SQLPOINTER)MedicineValidateDate, wcslen(MedicineValidateDate), &strLength);
+							  ::SQLBindParameter(reinterpret_cast<SQLHSTMT>(stm1), 7, SQL_PARAM_INPUT, SQL_C_WCHAR, SQL_WVARCHAR, 100, 0, (SQLPOINTER)AdditionInfo, wcslen(AdditionInfo), &strLength);
 					}
 					else
 					{
@@ -160,12 +164,10 @@ void DataBaseOp::initMedcineBasicInfo()
 		  catch (SQLRETURN retcode)
 		  {
 					if (retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO)
-					{
-							  std::cout << "[DATABASE STATUS]: 数据库插入操作成功" << std::endl;
-					}
+							  std::cout << "[DATABASE INSERT STATUS]: 数据库插入操作成功" << std::endl;
 					else
 					{
-							  std::cout << "[DATABASE STATUS]: 数据库插入操作失败" << std::endl;
+							  std::cout << "[DATABASE INSERT STATUS]: 数据库插入操作失败" << std::endl;
 							  SQLLEN numRecs = 0;
 							  SQLGetDiagField(SQL_HANDLE_STMT, reinterpret_cast<SQLHSTMT>(stm1), 0, SQL_DIAG_NUMBER, &numRecs, 0, 0);
 							  SQLSMALLINT i = 1, MsgLen;
