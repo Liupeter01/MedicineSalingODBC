@@ -7,21 +7,31 @@
 */
 DataBaseConnect::Connection::Connection()
 {
+		  setlocale(LC_ALL, "zh-CN");
 		  henv = new HENV;
 		  hdbc = new HDBC;
-		  SQLWCHAR* ptemp(new SQLWCHAR[6]{ L"sql01" });
-		  this->szdsninfo = ptemp;
-		  try{			
-					if (this->dataBaseOpenConnection() != SQL_SUCCESS_WITH_INFO)
-							  throw 1;			  //数据库连接错误
+		  SQLWCHAR* pszd(new SQLWCHAR[30]{ L"MedicineManagementSysDSN" });
+		  SQLWCHAR* puid(new SQLWCHAR[15]{ L"MedicineOp" });
+		  SQLWCHAR* pass(new SQLWCHAR[25]{ L"MedicineOp" });
+		  this->szdsninfo = pszd;
+		  this->uid = puid;
+		  this->szauthstr = pass;
+		  try
+		  {			
+					throw this->dataBaseOpenConnection();
 		  }
-		  catch (int error)				//数据库连接错误
+		  catch (RETCODE errcode)				//数据库连接错误
 		  {
-					if (error) std::cout << "[COMMAND LINE STATUS]: 数据库连接错误" << std::endl;
-					return;						  //返回
+					if (errcode == SQL_SUCCESS_WITH_INFO || errcode == SQL_SUCCESS)
+					{
+							  std::cout << "[COMMAND LINE STATUS]:数据库连接成功" << std::endl;
+							  ConnectionSatus = true;				   //数据库连接状态成功
+					}
+					else				 //数据库连接错误
+					{
+							  std::cout << "[COMMAND LINE STATUS]: 数据库连接错误" << std::endl;
+					}  
 		  }
-		  std::cout << "[COMMAND LINE STATUS]:数据库连接成功" << std::endl;
-		  ConnectionSatus = true;				   //数据库连接状态成功
 }
 
 /*
@@ -35,6 +45,9 @@ DataBaseConnect::Connection::~Connection()
 		  this->dataBaseCloseConnection();					//关闭数据库的连接
 		  delete henv;
 		  delete hdbc;
+		  delete[]this->szdsninfo;
+		  delete[]this->uid;
+		  delete []this->szauthstr;
 }
 
 /*

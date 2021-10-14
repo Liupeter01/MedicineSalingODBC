@@ -8,6 +8,7 @@
 #include<cstdlib>
 #include<vector>
 #include<string>
+#include<locale>
 
 /*引入C语言ODBC的头文件*/
 extern "C"

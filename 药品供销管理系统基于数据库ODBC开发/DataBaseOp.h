@@ -23,8 +23,8 @@ private:
 
 private:
 		  HSTMT *stm1;					//连接句柄
-		  SQLCHAR sqlQuery[1024] = { 0 };
-		  SQLCHAR** sqlPatterns;				  //查询模式
+		  SQLWCHAR sqlQuery[1024] = { 0 };
+		  SQLWCHAR** sqlPatterns;				  //查询模式
 
 private:
 		  enum sqlquery {

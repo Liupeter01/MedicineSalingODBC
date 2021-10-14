@@ -7,7 +7,9 @@
 int DataBaseOp::getInitQuerySize()
 {
 		  int querysize(0);
-		  for (enum sqlquery temp = sqlquery::INIT_BASIC_INFO; temp != sqlquery::OTHER; temp = (enum sqlquery)(temp + 1))
+		  for (enum sqlquery temp = (enum sqlquery)sqlquery::INIT_BASIC_INFO;
+					temp != sqlquery::OTHER; temp = (enum sqlquery)(temp + 1)
+					)
 		  {
 					querysize++;
 		  }
@@ -21,11 +23,13 @@ int DataBaseOp::getInitQuerySize()
 */
 void DataBaseOp::sqlInitQueryParttern()
 {
-		  this->sqlPatterns = new SQLCHAR * [this->getInitQuerySize()];			//动态分配查询语句的大小
+		  this->sqlPatterns = new SQLWCHAR * [this->getInitQuerySize()];			//动态分配查询语句的大小
 		  for (int i = 0; i < this->getInitQuerySize(); ++i)
 		  {
-					(this->sqlPatterns)[i] = new SQLCHAR[256]{ 0 };
+					(this->sqlPatterns)[i] = new SQLWCHAR[256]{ 0 };
 		  }
+		  wsprintf((this->sqlPatterns)[INIT_BASIC_INFO],
+					L"INSERT INTO MedicineManagmentSys.dbo.MedicineWareBase values(?,?,?,?,?,?,?) ");
 }
 
 /*
@@ -51,6 +55,7 @@ DataBaseOp::DataBaseOp()
 							  std::cout << "[DATABASE STATUS]: 数据库句柄分配失败" << std::endl;
 					}
 					this->sqlInitQueryParttern();
+
 		  }
 }
 
@@ -125,20 +130,53 @@ void DataBaseOp::initMedcineBasicInfo()
 		  std::cin >> MedicineValidateDate;
 		  std::cout << "AdditionInfo:";
 		  std::cin >> AdditionInfo;
-		  sprintf(reinterpret_cast<char*>((this->sqlPatterns)[INIT_BASIC_INFO]),
-					"INSERT INTO MedicineWareBase values(%d,\'%s\',\'%s\',\'%s\',%f,\'%s\',\'%s\')",MedicineId, 
-					MedicineName.c_str(),MedicineType.c_str(),Manufacture.c_str(), 
-					MedicinePrice, MedicineValidateDate.c_str(), AdditionInfo.c_str());
 		  try
 		  {
-					SQLExecDirectW(stm1, reinterpret_cast<SQLWCHAR*>((this->sqlPatterns)[INIT_BASIC_INFO]), SQL_NTS);
+					throw SQLPrepareW(reinterpret_cast<SQLHSTMT>(stm1), (this->sqlPatterns)[INIT_BASIC_INFO], SQL_NTS);
+		  }
+		  catch (SQLRETURN retcode)
+		  {
+					if(retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO)
+					{
+							  SQLLEN strLength = SQL_NTS;
+							  //绑定SQL语句的参数
+							  ::SQLBindParameter(reinterpret_cast<SQLHSTMT>(stm1), 1, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 100, 0, (SQLPOINTER)&MedicineId, sizeof(int), NULL);
+							  ::SQLBindParameter(reinterpret_cast<SQLHSTMT>(stm1), 2, SQL_PARAM_INPUT, SQL_C_WCHAR, SQL_WVARCHAR, 100, 0, (SQLPOINTER)MedicineName.c_str(), strlen(MedicineName.c_str()), &strLength);
+							  ::SQLBindParameter(reinterpret_cast<SQLHSTMT>(stm1), 3, SQL_PARAM_INPUT, SQL_C_WCHAR, SQL_WVARCHAR, 50, 0, (SQLPOINTER)MedicineType.c_str(), strlen(MedicineType.c_str()), &strLength);
+							  ::SQLBindParameter(reinterpret_cast<SQLHSTMT>(stm1), 4, SQL_PARAM_INPUT, SQL_C_WCHAR, SQL_WVARCHAR, 100, 0, (SQLPOINTER)Manufacture.c_str(), strlen(Manufacture.c_str()), &strLength);
+							  ::SQLBindParameter(reinterpret_cast<SQLHSTMT>(stm1), 5, SQL_PARAM_INPUT,  SQL_C_FLOAT, SQL_FLOAT, 8, 0, (SQLPOINTER)&MedicinePrice, sizeof(float), NULL);
+							  ::SQLBindParameter(reinterpret_cast<SQLHSTMT>(stm1), 6, SQL_PARAM_INPUT, SQL_C_WCHAR, SQL_WVARCHAR, 20, 0, (SQLPOINTER)MedicineValidateDate.c_str(), strlen(MedicineValidateDate.c_str()), &strLength);
+							  ::SQLBindParameter(reinterpret_cast<SQLHSTMT>(stm1), 7, SQL_PARAM_INPUT, SQL_C_WCHAR, SQL_WVARCHAR, 100, 0, (SQLPOINTER)AdditionInfo.c_str(), strlen(AdditionInfo.c_str()), &strLength);
+					}
+					else
+					{
+							  std::cout << "[DATABASE PARAMETER BIND STATUS]: 数据库参数绑定操作失败" << std::endl;
+					}
+		  }
+		  try
+		  {
+					throw SQLExecute(reinterpret_cast<SQLHSTMT>(stm1));
 		  }
 		  catch (SQLRETURN retcode)
 		  {
 					if (retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO)
+					{
 							  std::cout << "[DATABASE STATUS]: 数据库插入操作成功" << std::endl;
+					}
 					else
+					{
 							  std::cout << "[DATABASE STATUS]: 数据库插入操作失败" << std::endl;
+							  SQLLEN numRecs = 0;
+							  SQLGetDiagField(SQL_HANDLE_STMT, reinterpret_cast<SQLHSTMT>(stm1), 0, SQL_DIAG_NUMBER, &numRecs, 0, 0);
+							  SQLSMALLINT i = 1, MsgLen;
+							  SQLWCHAR SqlState[6], Msg[SQL_MAX_MESSAGE_LENGTH];
+							  SQLINTEGER NativeError;
+							  while (i <= numRecs && (SQLGetDiagRec(SQL_HANDLE_STMT, reinterpret_cast<SQLHSTMT>(stm1), i, SqlState, &NativeError, Msg, sizeof(Msg), &MsgLen)) != SQL_NO_DATA)
+							  {
+										
+										std::wcout << L"SQLSTATE " << SqlState << L" " << Msg << std::endl;
+										++i;
+							  }
+					}
 		  }
 }
-
