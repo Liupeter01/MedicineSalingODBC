@@ -24,14 +24,7 @@ void DataBaseOp::eraseSpace(T* str)				  //删除多余空格
 {
 		  T* ptemp = str;
 		  while (*ptemp++ != ' ');
-		  if(!strcmp(typeid(T*).name(), "wchar_t*"))
-		  {
-					*ptemp = L'\0';
-		  }
-		  else
-		  {
-					*ptemp = '\0';
-		  }
+		  *ptemp = ((!strcmp(typeid(T*).name(), "wchar_t*")) ? L'\0' : '\0');
 }
 
 /*
@@ -42,10 +35,8 @@ void DataBaseOp::eraseSpace(T* str)				  //删除多余空格
 int DataBaseOp::getInitQuerySize()
 {
 		  int querysize(0);
-		  for (enum sqlquery temp = (enum sqlquery)sqlquery::INIT_BASIC_INFO;
-					temp != sqlquery::OTHER; temp = (enum sqlquery)(temp + 1)
-					)
-		  {
+		  for (enum sqlquery temp = (enum DataBaseOp::sqlquery)sqlquery::INIT_BASIC_INFO;
+					temp != sqlquery::OTHER; temp = (enum DataBaseOp::sqlquery)(temp + 1)){
 					querysize++;
 		  }
 		  return querysize;
@@ -67,11 +58,12 @@ void DataBaseOp::sqlInitQueryParttern()
 		  //MEDICINE_BUYING	药品基本信息的采购
 		  //MEDICINE_SALING	药品基本信息的销售
 		  //DISPLAY_ALL_BASIC_INFO				输出全部药品基本信息
+		  //SEARCH_BASIC_INFO	查询基本的信息
 		  wsprintf((this->sqlPatterns)[INIT_BASIC_INFO],L"INSERT INTO MedicineManagmentSys.dbo.MedicineWareBase values(?,?,?,?,?,?,?) ");	//7参数
 		  wsprintf((this->sqlPatterns)[MEDICINE_BUYING], L"INSERT INTO MedicineManagmentSys.dbo.MedicineBuying values(?,?,?,?,?,?,?) ");	//7参数
 		  wsprintf((this->sqlPatterns)[MEDICINE_SALING], L"INSERT INTO MedicineManagmentSys.dbo.MedicineSaling values(?,?,?,?,?,?,?,?) ");	//8参数
-		  wsprintf((this->sqlPatterns)[DISPLAY_ALL_BASIC_INFO], L"SELECT * FROM MedicineManagmentSys.dbo.MedicineWareBase");	//8参数
-		
+		  wsprintf((this->sqlPatterns)[DISPLAY_ALL_BASIC_INFO], L"SELECT * FROM MedicineManagmentSys.dbo.MedicineWareBase");	
+		  wsprintf((this->sqlPatterns)[SEARCH_BASIC_INFO], L"SELECT * FROM MedicineManagmentSys.dbo.MedicineWareBase WHERE ");
 }
 
 /*
@@ -83,6 +75,16 @@ void DataBaseOp::sqlInitQueryParttern()
 */
 DataBaseOp::DataBaseOp()
 {
+		  this->sqlInitQueryParttern();
+}
+
+/*
+* STMT分配函数
+* @author：LPH
+* Date：2021-10-21
+*/
+void DataBaseOp::AllocateStmt()
+{
 		  if (this->ConnectionSatus)
 		  {
 					this->stm1 = new HSTMT;
@@ -91,7 +93,7 @@ DataBaseOp::DataBaseOp()
 					{
 							  throw  SQLAllocHandle(SQL_HANDLE_STMT, *hdbc, reinterpret_cast<SQLHANDLE*>(&stm1));;
 					}
-					catch(SQLRETURN retcode)
+					catch (SQLRETURN retcode)
 					{
 							  if (retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO)
 							  {
@@ -102,9 +104,34 @@ DataBaseOp::DataBaseOp()
 										std::cout << "[DATABASE STATUS]: 数据库句柄分配失败" << std::endl;
 							  }
 					}
-					this->sqlInitQueryParttern();
 		  }
 }
+
+/*
+* STMT释放函数
+* @author：LPH
+* Date：2021-10-21
+*/
+void DataBaseOp::ReleaseStmt()
+{
+		  try
+		  {
+					throw SQLFreeHandle(SQL_HANDLE_STMT, reinterpret_cast<SQLHANDLE>(stm1));
+		  }
+		  catch (SQLRETURN retcode)
+		  {
+					if (retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO)
+							  std::cout << "[DATABASE STATUS]: 数据库句柄释放成功" << std::endl;
+					else
+							  std::cout << "[DATABASE STATUS]: 数据库句柄释放失败" << std::endl;
+		  }
+		  if (stm1 != nullptr)
+		  {
+					SQLFreeStmt(stm1, SQL_DROP);			//释放stmt
+		  }
+}
+
+
 
 /*
 * SQL查询语句析构函数
@@ -123,31 +150,6 @@ DataBaseOp::~DataBaseOp()
 							  delete  (this->sqlPatterns)[i];
 					}
 					delete []this->sqlPatterns;		//释放SQL查询语句
-					try
-					{
-							  throw SQLFreeHandle(SQL_HANDLE_STMT, reinterpret_cast<SQLHANDLE>(stm1));
-					}
-					catch (SQLRETURN retcode)
-					{
-							  if (retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO)
-										std::cout << "[DATABASE STATUS]: 数据库句柄释放成功" << std::endl;
-							  else
-										std::cout << "[DATABASE STATUS]: 数据库句柄释放失败" << std::endl;
-					}
-					if (stm1 != nullptr)
-					{
-							  SQLFreeStmt(stm1, SQL_DROP);			//释放stmt
-					}
-		  }
-}
-
-void DataBaseOp::menu()
-{
-		  if (this->ConnectionSatus)
-		  {
-					//this->initMedicineBasicInfo();
-					//this->initMedicinePurchase();
-					this->displayAllBasicInfo();
 		  }
 }
 
@@ -180,6 +182,8 @@ void DataBaseOp::initMedicineBasicInfo()
 		  std::cout << "AdditionInfo:";
 		  std::wcin.getline(AdditionInfo, 256);
 		  std::wcin.get();
+
+		  //std::regex					对于日期进行正则判断
 		  try
 		  {
 					throw SQLPrepareW(reinterpret_cast<SQLHSTMT>(stm1), (this->sqlPatterns)[INIT_BASIC_INFO], SQL_NTS);
@@ -252,6 +256,9 @@ void DataBaseOp::initMedicinePurchase()	//初始化药品采购信息
 					std::cout << "OperatorName:";
 					std::wcin.getline(OperatorName, 256);
 					std::wcin.get();
+
+					//std::regex					对于日期进行正则判断
+
 					if (retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO)
 					{
 							  SQLLEN strLength = SQL_NTS;
@@ -292,6 +299,7 @@ void DataBaseOp::initMedicinePurchase()	//初始化药品采购信息
 */
 void DataBaseOp::initMedicineSaling()	    //初始化药品销售信息
 {
+		  this->AllocateStmt();
 		  try
 		  {
 					throw SQLPrepareW(reinterpret_cast<SQLHSTMT>(stm1), (this->sqlPatterns)[MEDICINE_SALING], SQL_NTS);
@@ -323,6 +331,9 @@ void DataBaseOp::initMedicineSaling()	    //初始化药品销售信息
 							  std::wcin.getline(BuyerName, 256);
 							  std::wcin.get();
 							  float pricetotal(TransactAmmount * MedicinePrice);
+
+							  //std::regex					对于日期进行正则判断
+
 							  SQLLEN strLength = SQL_NTS;
 							  //绑定SQL语句的参数
 							  ::SQLBindParameter(reinterpret_cast<SQLHSTMT>(stm1), 1, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 100, 0, (SQLPOINTER)&OrderId, sizeof(int), NULL);
@@ -353,18 +364,20 @@ void DataBaseOp::initMedicineSaling()	    //初始化药品销售信息
 							  std::cout << "[DATABASE PARAMETER BIND STATUS]: 数据库参数绑定操作失败" << std::endl;
 					}
 		  }
+		  this->ReleaseStmt();
 }
 
 /*
-*输出全部药品基本信息
+*输出全部基本信息子函数
 * @author：LPH
 * Date：2021-10-14
 */
-void DataBaseOp::displayAllBasicInfo()
+void DataBaseOp::printBasicInfo()
 {
+		  this->AllocateStmt();
 		  try
 		  {
-					throw SQLExecDirectW(stm1, (this->sqlPatterns)[DISPLAY_ALL_BASIC_INFO], SQL_NTS);
+					throw SQLExecDirectW(stm1, this->basicInfo, SQL_NTS);
 		  }
 		  catch (SQLRETURN retcode)
 		  {
@@ -395,7 +408,7 @@ void DataBaseOp::displayAllBasicInfo()
 										eraseSpace<wchar_t>(Manufacture);
 										eraseSpace<wchar_t>(MedicineValidateDate);
 										eraseSpace<wchar_t>(AdditionInfo);
-										std::wcout<< MedicineId << " " << MedicineName << " " <<
+										std::wcout << MedicineId << " " << MedicineName << " " <<
 												  MedicineType << " " << Manufacture << " " << MedicinePrice << " " <<
 												  MedicineValidateDate << " " << AdditionInfo << " " << std::endl;
 
@@ -425,23 +438,120 @@ void DataBaseOp::displayAllBasicInfo()
 							  this->sqlErrorMsg();
 					}
 		  }
+		  this->ReleaseStmt();
 }
 
 /*
-*错误信息输出函数
+*查询药品的基本信息
 * @author：LPH
+* @Para:
+*		  target:需要查找的属性
+*		  Find: 需要查找的内容
 * Date：2021-10-14
 */
-void DataBaseOp::sqlErrorMsg()
+bool DataBaseOp::findMedicineBasicInfo(const wchar_t*target,const wchar_t *Find)	//查询药品的基本信息
 {
-		  SQLLEN numRecs = 0;
-		  SQLGetDiagField(SQL_HANDLE_STMT, reinterpret_cast<SQLHSTMT>(stm1), 0, SQL_DIAG_NUMBER, &numRecs, 0, 0);
-		  SQLSMALLINT i = 1, MsgLen;
-		  SQLWCHAR SqlState[6], Msg[SQL_MAX_MESSAGE_LENGTH];
-		  SQLINTEGER NativeError;
-		  while (i <= numRecs && (SQLGetDiagRec(SQL_HANDLE_STMT, reinterpret_cast<SQLHSTMT>(stm1), i, SqlState, &NativeError, Msg, sizeof(Msg), &MsgLen)) != SQL_NO_DATA)
+		  wchar_t* ptemp(new wchar_t[wcslen(target) + wcslen(L" = ") + 1]);
+		  wcscpy(ptemp, target);
+		  wcscat(ptemp, L" = ");
+		  int ind(0);		  //属性下标
+		  for (; ind < 7; ind++)
 		  {
-					std::wcout << L"SQLSTATE " << SqlState << L" " << Msg << std::endl;
-					++i;
+					if (!lstrcmpW(this->QueryBasicMedicineInfo[ind], ptemp))
+					{
+							  delete[]ptemp;
+							  break;
+					}
 		  }
+		  if (ind != 7)
+		  {
+					int originInfoLength = (int)wcslen((this->sqlPatterns)[SEARCH_BASIC_INFO]);			//备份信息原始长度
+					::wcscat((this->sqlPatterns)[SEARCH_BASIC_INFO], this->QueryBasicMedicineInfo[ind]);	  //字符串粘结
+					::wcscat((this->sqlPatterns)[SEARCH_BASIC_INFO], L"\'");
+					::wcscat((this->sqlPatterns)[SEARCH_BASIC_INFO], Find);
+					::wcscat((this->sqlPatterns)[SEARCH_BASIC_INFO], L"\'");
+					this->basicInfo = (this->sqlPatterns)[SEARCH_BASIC_INFO];			  //修改BasicInfo指针
+					wprintf(L"%s", this->basicInfo);
+					this->printBasicInfo();
+					memset((this->sqlPatterns)[SEARCH_BASIC_INFO] + originInfoLength,
+							  L'\0', sizeof(wchar_t) * (256 - originInfoLength ));
+					return true;
+		  }
+		  else
+		  {
+					std::cout << "[DATABASE SELECT STATUS]: 输入的属性列错误" << std::endl;
+					delete[]ptemp;
+		  }
+		  return false;
+}
+
+/*
+*查询药品的采购信息	 
+* @author：LPH
+* * @Para:
+*		  target:需要查找的属性
+*		  Find: 需要查找的内容
+* Date：2021-10-14
+*/
+bool DataBaseOp::findMedicinePurchaseInfo(const wchar_t* target, const wchar_t* Find)//查询药品的采购信息	  
+{
+		  const wchar_t* basic_types[]
+		  {
+					L"BuyingOrderNumber = ",L"MedicineId = ",L"MedicineName = ",
+					L"TransActionAmmount = ",L"PriceInTotal = ",
+					L"TransActionDate = ",L"OperatorName = "
+		  };
+		  int ind(0);		  //属性下标
+		  for (; ind < 7; ind++)
+		  {
+					if (!lstrcmpW(basic_types[ind], target))		   break;
+		  }
+		  //if (ind != 7)
+		  //{
+				//	::wcscat((this->sqlPatterns)[SEARCH_BASIC_INFO], basic_types[ind]);	  //字符串粘结
+				//	::wcscat((this->sqlPatterns)[SEARCH_BASIC_INFO], Find);
+				//	this->printInfo = (this->sqlPatterns)[SEARCH_BASIC_INFO];			  //修改BasicInfo指针
+				//	this->printBasicInfo();
+		  //}
+		  //else
+		  //{
+				//	std::cout << "[DATABASE SELECT STATUS]: 输入的属性列错误" << std::endl;
+		  //}
+		  return false;
+}
+
+/*
+*查询药品的销售信息
+* @author：LPH
+* * @Para:
+*		  target:需要查找的属性
+*		  Find: 需要查找的内容
+* Date：2021-10-14
+*/
+bool DataBaseOp::findMedicineSalingInfo(const wchar_t*, const wchar_t*)	  //查询药品的销售信息	  
+{
+		  //const wchar_t* basic_types[]
+		  //{
+				//	L"MedicineId = ",L"MedicineName = ",
+				//	L"MedicineType = ",L"Manufacture = ",
+				//	L"MedicinePrice = ",L"MedicineValidateDate = ",
+				//	L"AdditionInfo = "
+		  //};
+		  //int ind(0);		  //属性下标
+		  //for (; ind < 7; ind++)
+		  //{
+				//	if (!lstrcmpW(basic_types[ind], target))		   break;
+		  //}
+		  //if (ind != 7)
+		  //{
+				//	::wcscat((this->sqlPatterns)[SEARCH_BASIC_INFO], basic_types[ind]);	  //字符串粘结
+				//	::wcscat((this->sqlPatterns)[SEARCH_BASIC_INFO], Find);
+				//	this->printInfo = (this->sqlPatterns)[SEARCH_BASIC_INFO];			  //修改BasicInfo指针
+				//	this->printBasicInfo();
+		  //}
+		  //else
+		  //{
+				//	std::cout << "[DATABASE SELECT STATUS]: 输入的属性列错误" << std::endl;
+		  //}
+		  return false;
 }

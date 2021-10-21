@@ -9,10 +9,9 @@
 #include<vector>
 #include<string>
 #include<locale>
+#include<regex>
 
 /*引入C语言ODBC的头文件*/
-extern "C"
-{
 #include <windows.h>
 #include <sql.h>
 #include <sqlext.h>
@@ -21,9 +20,8 @@ extern "C"
 #include <tchar.h>
 #include <stdlib.h>
 #include <sal.h>
-}
-
 #pragma comment(lib,"odbc32.lib")
+#pragma warning(disable:6386)
 
 /*
 *问题修复：SQLConnect函数数据库连接返回值=-2   -------  OK
