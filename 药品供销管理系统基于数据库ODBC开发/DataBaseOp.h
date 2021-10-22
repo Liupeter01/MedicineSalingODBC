@@ -36,9 +36,9 @@ private:
 		  void initMedicinePurchase();	//初始化药品采购信息
 		  void initMedicineSaling();	    //初始化药品销售信息
 
-		  void printBasicInfo();				  //输出全部基本信息子函数
-		  void printPurchaseInfo();				  //输出全部采购信息子函数
-		  void printSalingInfo();				  //输出全部销售信息子函数
+		  void printBasicInfo();				  //输出基本信息子函数
+		  void printPurchaseInfo();				  //输出采购信息子函数
+		  void printSalingInfo();				  //输出销售信息子函数
 		  void displayAllBasicInfo();	    //输出全部药品基本信息
 		  bool findMedicineBasicInfo(const wchar_t* target, const wchar_t* Find);//查询药品的基本信息
 		  bool findMedicinePurchaseInfo(const wchar_t* target, const wchar_t* Find);	//查询药品的采购信息	  
@@ -47,9 +47,10 @@ private:
 
 private:
 		  /*函数专用SQL语句指针*/
-		  SQLWCHAR* BasicMedicineInfo;					  //printBasicInfo输出参数指针
-		  //SQLWCHAR* printInfo;					  //printBasicInfo输出参数指针
-		  //SQLWCHAR* printInfo;					  //printBasicInfo输出参数指针
+		  SQLWCHAR* BasicMedicineInfo;		//printBasicInfo输出参数指针
+		  SQLWCHAR* PurchaseInfo;					  //printBuyingInfo输出参数指针
+		  SQLWCHAR* SalingInfo;					  //printSalingInfo输出参数指针
+
 		  const wchar_t* QueryBasicMedicineInfo[7]
 		  {
 					L"MedicineId = ",L"MedicineName = ",
@@ -63,6 +64,12 @@ private:
 					L"TransActionAmmount = ",L"PriceInTotal = ",
 					L"TransActionDate = ",L"OperatorName = "
 		  };
+		  const wchar_t* QuerySalingMedicine[8]
+		  {
+					L"SalingOrderNumber = ",L"MedicineId = ",L"MedicineName = ",
+					L"MedicinePrice = ",L"TransActionAmmount = ",L"PriceInTotal = ",
+					L"TransActionDate = ",L"BuyerName = "
+		  };
 private:
 		  HSTMT *stm1;					//连接句柄
 		  SQLWCHAR sqlQuery[1024] = { 0 };
@@ -70,14 +77,27 @@ private:
 
 private:
 		  enum sqlquery {
+					/*增加信息  DBInsert.cpp*/
 					INIT_BASIC_INFO,	//录入药品基本信息
 					MEDICINE_BUYING,	//药品基本信息的采购
 					MEDICINE_SALING,	//药品基本信息的销售
-					MODIFIY_BASIC_INFO,	//修改药品基本信息
+
+					/*修改信息*/
+					MODIFIY_BASIC_INFO,	//修改WareBase中的基本信息
+					MODIFIY_BUYING_INFO,	//修改入库的信息
+					MODIFIY_SALING_INFO,	//修改销售的信息
+
+					/*查询信息*/
 					DISPLAY_ALL_BASIC_INFO,	//输出全部药品的基本信息
-					SEARCH_BASIC_INFO,	//查询基本的信息
+					SEARCH_BASIC_INFO,	//查询WareBase中的信息
 					SEARCH_BUYING_INFO,//查询入库的信息
 					SEARCH_SALING_INFO,//查询销售的信息
+
+					/*删除信息*/
+					DELETE_BASIC_INFO,		//删除WareBase中的信息
+					DELETE_BUYING_INFO,//删除入库的信息
+					DELETE_SALING_INFO,//删除销售的信息
+
 					STATISTICS_BASIC_INFO,	//统计基本的信息
 					STATISTICS_BUYING_INFO,//统计入库的信息
 					STATISTICS_SALING_INFO,//统计销售的信息

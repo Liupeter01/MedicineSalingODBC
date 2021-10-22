@@ -30,6 +30,12 @@
     <ClCompile Include="DBTools.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="DBInsert.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="DBSearch.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Connection.h">
