@@ -9,9 +9,10 @@ void DataBaseOp::sqlInitQueryParttern()
 		  this->sqlPatterns = new SQLWCHAR * [this->getInitQuerySize()];			//动态分配查询语句的大小
 		  for (int i = 0; i < this->getInitQuerySize(); ++i)
 		  {
-					(this->sqlPatterns)[i] = new SQLWCHAR[256]{ 0 };
+					(this->sqlPatterns)[i] = new SQLWCHAR[512]{ 0 };
 		  }
 		  wsprintf((this->sqlPatterns)[INIT_BASIC_INFO],L"INSERT INTO MedicineManagmentSys.dbo.MedicineWareBase values(?,?,?,?,?,?,?) ");	//7参数
+		  wsprintf((this->sqlPatterns)[MODIFIY_BASIC_INFO], L"UPDATE MedicineManagmentSys.dbo.MedicineWareBase SET ");	//7参数
 		  wsprintf((this->sqlPatterns)[MEDICINE_BUYING], L"INSERT INTO MedicineManagmentSys.dbo.MedicineBuying values(?,?,?,?,?,?,?) ");	//7参数
 		  wsprintf((this->sqlPatterns)[MEDICINE_SALING], L"INSERT INTO MedicineManagmentSys.dbo.MedicineSaling values(?,?,?,?,?,?,?,?) ");	//8参数
 		  wsprintf((this->sqlPatterns)[DISPLAY_ALL_BASIC_INFO], L"SELECT * FROM MedicineManagmentSys.dbo.MedicineWareBase");	

@@ -16,9 +16,12 @@ public:
 		  void menu();
 		  void sqlErrorMsg();					  //错误信息输出函数
 
-private:/*STMT的分配与释放函数*/
-		  void AllocateStmt();
-		  void ReleaseStmt();
+private:
+		  void instructExecute();		//命令执行工具
+		  int getInitQuerySize();
+		  void sqlInitQueryParttern();	//初始化SQL查询语句结构
+		  void AllocateStmt();			//STMT的分配函数
+		  void ReleaseStmt();			//STMT的释放函数
 		  template<typename T>  void eraseSpace(T* str)	{[&]() {/*删除多余空格*/	
 							  T* ptemp = str;
 							  while (*ptemp++ != ' ');
@@ -30,8 +33,6 @@ private:/*STMT的分配与释放函数*/
 
 private:
 		  /*业务逻辑*/
-		  int getInitQuerySize();
-		  void sqlInitQueryParttern();	//初始化SQL查询语句结构
 		  void initMedicineBasicInfo();	//初始化药品的基本信息
 		  void initMedicinePurchase();	//初始化药品采购信息
 		  void initMedicineSaling();	    //初始化药品销售信息
@@ -42,7 +43,18 @@ private:
 		  void displayAllBasicInfo();	    //输出全部药品基本信息
 		  bool findMedicineBasicInfo(const wchar_t* target, const wchar_t* Find);//查询药品的基本信息
 		  bool findMedicinePurchaseInfo(const wchar_t* target, const wchar_t* Find);	//查询药品的采购信息	  
-		  bool findMedicineSalingInfo(const wchar_t* target, const wchar_t* Find);		  //查询药品的销售信息	  
+		  bool findMedicineSalingInfo(const wchar_t* target, const wchar_t* Find);		  //查询药品的销售信息
+
+		  bool modifyMedicineBasicInfo(const wchar_t* target, const wchar_t* expired, const wchar_t* uptodate);	  //修改药品的基本信息
+		  bool modifyMedicinePurchaseInfo(const wchar_t* target);	  //修改采购信息(是否可以修改流水)	
+		  bool modifyMedicineSalingInfo(const wchar_t* target);		  //修改销售信息(是否可以修改流水)
+
+		  bool deleteMedicineBasicInfo(const wchar_t* target, const wchar_t* deleteitem); //删除药品的基本信息
+		  bool deleteMedicinePurchaseInfo(const wchar_t* target, const wchar_t* deleteitem); //删除药品的采购信息(是否可以修改流水)	
+		  bool deleteMedicineSalingInfo(const wchar_t* target, const wchar_t* deleteitem); //删除药品的销售信息(是否可以修改流水)	
+
+
+
 		  void statisticMedicineBasicInfo();		  //统计药品的基本信息
 
 private:

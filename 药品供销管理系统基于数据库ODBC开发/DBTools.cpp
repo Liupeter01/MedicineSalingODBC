@@ -16,6 +16,31 @@ int DataBaseOp::getInitQuerySize()
 }
 
 /*
+* 命令执行工具
+* @author：LPH
+* Date：2021-10-25
+*/
+void DataBaseOp::instructExecute()
+{
+		  this->AllocateStmt();
+		  try {
+					throw SQLExecDirectW(stm1, this->BasicMedicineInfo, SQL_NTS);
+		  }
+		  catch (SQLRETURN retcode) {
+					if (retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO)
+					{
+							  std::cout << "[DATABASE SELECT STATUS]: 数据库信息修改成功" << std::endl;
+					}
+					else
+					{
+							  std::cout << "[DATABASE SELECT STATUS]: 数据库信息修改失败" << std::endl;
+							  this->sqlErrorMsg();
+					}
+		  }
+		  this->ReleaseStmt();
+}
+
+/*
 *错误信息输出函数
 * @author：LPH
 * Date：2021-10-14

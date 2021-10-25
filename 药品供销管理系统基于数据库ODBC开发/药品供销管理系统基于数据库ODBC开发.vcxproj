@@ -142,6 +142,7 @@
     <ClCompile Include="Connection.cpp" />
     <ClCompile Include="DataBaseOp.cpp" />
     <ClCompile Include="DBInsert.cpp" />
+    <ClCompile Include="DBmodify.cpp" />
     <ClCompile Include="DBSearch.cpp" />
     <ClCompile Include="DBTools.cpp" />
     <ClCompile Include="main.cpp" />
