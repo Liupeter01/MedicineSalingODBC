@@ -19,6 +19,7 @@ void DataBaseOp::sqlInitQueryParttern()
 		  wsprintf((this->sqlPatterns)[SEARCH_BASIC_INFO], L"SELECT * FROM MedicineManagmentSys.dbo.MedicineWareBase WHERE ");
 		  wsprintf((this->sqlPatterns)[SEARCH_BUYING_INFO], L"SELECT * FROM MedicineManagmentSys.dbo.MedicineBuying WHERE ");
 		  wsprintf((this->sqlPatterns)[SEARCH_SALING_INFO], L"SELECT * FROM MedicineManagmentSys.dbo.MedicineSaling WHERE ");
+		  wsprintf((this->sqlPatterns)[DELETE_BASIC_INFO], L"DELETE FROM MedicineManagmentSys.dbo.MedicineSaling WHERE ");
 }
 
 /*

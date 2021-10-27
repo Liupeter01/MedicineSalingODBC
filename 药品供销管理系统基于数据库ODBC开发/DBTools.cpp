@@ -16,11 +16,11 @@ int DataBaseOp::getInitQuerySize()
 }
 
 /*
-* 命令执行工具
+* 数据库基本信息操作工具
 * @author：LPH
 * Date：2021-10-25
 */
-void DataBaseOp::instructExecute()
+void DataBaseOp::BasicDBExecute()
 {
 		  this->AllocateStmt();
 		  try {
@@ -29,11 +29,11 @@ void DataBaseOp::instructExecute()
 		  catch (SQLRETURN retcode) {
 					if (retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO)
 					{
-							  std::cout << "[DATABASE SELECT STATUS]: 数据库信息修改成功" << std::endl;
+							  std::cout << "[DATABASE SELECT STATUS]: 数据库操作成功" << std::endl;
 					}
 					else
 					{
-							  std::cout << "[DATABASE SELECT STATUS]: 数据库信息修改失败" << std::endl;
+							  std::cout << "[DATABASE SELECT STATUS]: 数据库操作失败" << std::endl;
 							  this->sqlErrorMsg();
 					}
 		  }

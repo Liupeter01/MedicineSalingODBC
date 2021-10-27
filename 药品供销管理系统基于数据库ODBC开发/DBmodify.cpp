@@ -43,7 +43,7 @@ bool DataBaseOp::modifyMedicineBasicInfo(const wchar_t* target,const wchar_t *ex
 					}
 					wcscat((this->sqlPatterns)[MODIFIY_BASIC_INFO], condition);
 					this->BasicMedicineInfo = (this->sqlPatterns)[MODIFIY_BASIC_INFO];			  //ÐÞ¸ÄBasicInfoÖ¸Õë
-					this->instructExecute();	  //Ö´ÐÐSQLÓï¾ä
+					this->BasicDBExecute();  //Ö´ÐÐSQLÓï¾ä
 					memset((this->sqlPatterns)[MODIFIY_BASIC_INFO] + originInfoLength, L'\0', sizeof(wchar_t) * (512 - originInfoLength));					//½«sqlPatterns»Ö¸´³õÊ¼×´Ì¬
 					delete[]ptemp;
 					delete[]condition;

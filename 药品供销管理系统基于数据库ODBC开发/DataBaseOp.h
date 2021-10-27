@@ -17,7 +17,7 @@ public:
 		  void sqlErrorMsg();					  //错误信息输出函数
 
 private:
-		  void instructExecute();		//命令执行工具
+		  void BasicDBExecute();				  //数据库基本信息操作工具
 		  int getInitQuerySize();
 		  void sqlInitQueryParttern();	//初始化SQL查询语句结构
 		  void AllocateStmt();			//STMT的分配函数
@@ -52,8 +52,6 @@ private:
 		  bool deleteMedicineBasicInfo(const wchar_t* target, const wchar_t* deleteitem); //删除药品的基本信息
 		  bool deleteMedicinePurchaseInfo(const wchar_t* target, const wchar_t* deleteitem); //删除药品的采购信息(是否可以修改流水)	
 		  bool deleteMedicineSalingInfo(const wchar_t* target, const wchar_t* deleteitem); //删除药品的销售信息(是否可以修改流水)	
-
-
 
 		  void statisticMedicineBasicInfo();		  //统计药品的基本信息
 

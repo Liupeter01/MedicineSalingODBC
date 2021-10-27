@@ -39,6 +39,9 @@
     <ClCompile Include="DBmodify.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="DBDelete.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Connection.h">
