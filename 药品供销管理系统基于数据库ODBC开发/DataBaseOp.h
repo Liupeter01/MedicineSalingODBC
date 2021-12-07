@@ -41,6 +41,7 @@ private:
 		  void printPurchaseInfo();				  //输出采购信息子函数
 		  void printSalingInfo();				  //输出销售信息子函数
 		  void displayAllBasicInfo();	    //输出全部药品基本信息
+		 // bool FindMedicineInfo(bool DataBaseOp::(*F)(const wchar_t* target, const wchar_t* Find));	  //查询药品的函数
 		  bool findMedicineBasicInfo(const wchar_t* target, const wchar_t* Find);//查询药品的基本信息
 		  bool findMedicinePurchaseInfo(const wchar_t* target, const wchar_t* Find);	//查询药品的采购信息	  
 		  bool findMedicineSalingInfo(const wchar_t* target, const wchar_t* Find);		  //查询药品的销售信息

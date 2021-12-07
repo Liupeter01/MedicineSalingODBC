@@ -39,7 +39,7 @@ void DataBaseOp::printBasicInfo()
 										this->eraseSpace<wchar_t>(Manufacture);
 										this->eraseSpace<wchar_t>(MedicineValidateDate);
 										this->eraseSpace<wchar_t>(AdditionInfo);
-										std::wcout << MedicineId << L" " << MedicineName << L" " <<
+										std::wcout << MedicineId <<L" " << MedicineName << L" " <<
 												  MedicineType << L" " << Manufacture << L" " << MedicinePrice << L" " <<
 												  MedicineValidateDate << L" " << AdditionInfo << L" " << std::endl;
 
@@ -339,3 +339,21 @@ void DataBaseOp::displayAllBasicInfo()
 		  this->BasicMedicineInfo = (this->sqlPatterns)[DISPLAY_ALL_BASIC_INFO];			  //修改BasicInfo指针
 		  this->printBasicInfo();
 }
+
+/*
+*药品搜索的回调函数
+* @author：LPH
+* Date：2021-12-6
+* *		  target:需要查找的属性
+*		  Find: 需要查找的内容
+*/
+//bool DataBaseOp::FindMedicineInfo(bool (*F)(const wchar_t* target, const wchar_t* Find))
+//{
+//		  std::wstring row;
+//		  std::cout << "请输入需要查询的属性列：";
+//		  std::wcin >> row;
+//		  std::wstring info;
+//		  std::cout << "请输入需要查询的内容：";
+//		  std::wcin >> info;
+//		  F(row.c_str(), info.c_str());
+//}
